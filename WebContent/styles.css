@@ -1,0 +1,41 @@
+@charset "ISO-8859-1";
+
+.container{
+	width: 500px;
+	min-height: 500px;
+	margin: 0px auto;
+	text-align: center;
+	font-family: Tahoma, Arial, Helvetica;
+}
+
+.menu {
+  width: 500px;
+  border: 1px solid gray;
+  max-height: 50px;
+}
+
+.menu a.links{
+	height: 50px;
+	display: inline-block;	
+}
+
+table{
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	width: 500px;
+}
+
+th{
+	background-color: grey;
+	text-align: left;
+}
+
+td{
+	border-left: 1px solid black;
+	text-align: left;
+}
+
+tr:nth-child(even){
+	background-color: #e0e0e0;
+}
