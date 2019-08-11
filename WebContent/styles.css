@@ -6,36 +6,40 @@
 	margin: 0px auto;
 	text-align: center;
 	font-family: Tahoma, Arial, Helvetica;
+	font-size: 16px;
 }
 
-.menu {
-  width: 500px;
-  border: 1px solid gray;
-  max-height: 50px;
+
+#menu table {
+	text-align: center;
 }
 
-.menu a.links{
-	height: 50px;
+#menu th{
+	text-align: center;
+	background-color: white;
+}
+
+.timeblock{
 	display: inline-block;	
 }
 
-table{
+.dataTable table{
 	border-top: 1px solid black;
 	border-bottom: 1px solid black;
 	border-right: 1px solid black;
 	width: 500px;
 }
 
-th{
+.dataTable th{
 	background-color: grey;
 	text-align: left;
 }
 
-td{
+.dataTable td{
 	border-left: 1px solid black;
 	text-align: left;
 }
 
-tr:nth-child(even){
+.dataTable tr:nth-child(even){
 	background-color: #e0e0e0;
 }

@@ -1,6 +1,8 @@
 package com.codingdojo.web.controllers;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,22 +30,91 @@ public class Stopwatch extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 
-		// start session
+		// start session tracking
 		HttpSession session = request.getSession();
 		
-		// new or null session check
+		// get, format and set current time
+		Date currentTime = new Date();
+		DateFormat formatValue = new SimpleDateFormat("hh:mm:ss a");
+		session.setAttribute("currentTime", formatValue.format(currentTime));
 		
-		// get current time
+		// Setup to receive the action state from the start/stop/reset html links
+		String linkState = request.getParameter("action");
 		
-		// start logic
+
+		// check if clock has been started
+		if(linkState != null) {
+			// if started
+			if(linkState.equalsIgnoreCase("start")) {
+				// get start variable and check if it is empty
+				if(session.getAttribute("start") == null) {
+					// get and set new start date
+					Date start = new Date();
+					session.setAttribute("start", start);
+				}
+			// 	if stopped
+			} else if (linkState.equalsIgnoreCase("stop")) {
+				// check if there is a start date
+				if(session.getAttribute("start") != null) {
+					// get and set new stop date
+					Date stop = new Date();
+					session.setAttribute("stop", stop);
+					// Create new Timer model (Date) cast to the session object for Start/Stop times
+					Timer newTR = new Timer((Date)session.getAttribute("start"), (Date)session.getAttribute("stop"));
+			
+					// reset start and stop times in order to interrupt the logic loop above and prevent reset from a refresh
+					session.setAttribute("start", null);
+					session.setAttribute("stop", null);
+					
+					// for testing only
+					System.out.println(newTR);
+					System.out.println(newTR.getStart());
+					System.out.println(newTR.getStop());
+					System.out.println(newTR.getDelta());
+					System.out.println(Timer.getTimeTable());
+					System.out.println(Timer.arrayToString());
+					
+					request.setAttribute("newTR",  newTR);
+								
+					// add to OR retrieve an array to make available to render in jsp
+					//session.setAttribute("timeTable", new ArrayList<Timer>());
+					//ArrayList<Timer> timeTable = (ArrayList<Timer>) session.getAttribute("timeTable");
+					//session.setAttribute("timeTable", timeTable);
+					//request.setAttribute("timeTable", timeTable);
+					
+					//ArrayList<Timer> timeTable = new ArrayList<Timer>();
+					//timeTable.add(newTR);
+					//request.getSession().setAttribute("timeTable",  timeTable);;
+					
+					//System.out.println(timeTable);
+					
+				}
+			}
+		}
+		// get the delta (running time)
+		if(session.getAttribute("start")!= null) {
+			// use currentTime to get delta if there isn't a stop time yet
+			if(session.getAttribute("stop") == null) {
+				long delta = currentTime.getTime() - ((Date) session.getAttribute("start")).getTime();
+				session.setAttribute("delta", delta);
+			} else {
+				// use stop time to get delta if it exist
+				long delta = ((Date) session.getAttribute("stop")).getTime() - ((Date) session.getAttribute("start")).getTime();
+				session.setAttribute("delta", delta);
+			}
+			
+		}
 		
-		// stop logic
-		
+			
 		// reset logic
+		if(linkState != null) {
+			if(linkState.equalsIgnoreCase("reset")) {
+				request.getSession().invalidate();
+			}
+		}
 		
-		// add times to storage data structure (arrayList or HashMap???)
 		
-		// 
+		// set view
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/stopwatch.jsp");
         view.forward(request, response);
         

@@ -1,5 +1,6 @@
 package com.codingdojo.web.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 //Player JavaBean
@@ -11,6 +12,9 @@ public class Timer implements java.io.Serializable {
 	private Date stop;
 	private long delta;
 	
+	// List variable
+	private static ArrayList<Timer> timeTable = new ArrayList<Timer>();
+	
 	// Constructors
 	public Timer() {
 	}
@@ -19,6 +23,7 @@ public class Timer implements java.io.Serializable {
 		this.start = start;
 		this.stop = stop;
 		this.delta = getDelta(this.stop, this.start);
+		this.timeTable.add(this);
 	}
 	
 	// getters and setters
@@ -38,10 +43,22 @@ public class Timer implements java.io.Serializable {
 		return stop;
 	}
 	
+	public long getDelta() {
+		return delta;
+	}
+	
 	// used to calculate the duration of the timer (start / stop)
 	public static long getDelta(Date stop, Date start) {
 		return stop.getTime() - start.getTime();
 	}
 	
+	public static ArrayList<Timer> getTimeTable(){
+		return timeTable;
+	}
+	
+	public static String arrayToString()
+    {
+        return timeTable.toString();
+    }
 	
 }
