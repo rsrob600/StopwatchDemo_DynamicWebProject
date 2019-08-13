@@ -41,7 +41,12 @@ public class Stopwatch extends HttpServlet {
 		// Setup to receive the action state from the start/stop/reset html links
 		String linkState = request.getParameter("action");
 		
+		// declare and initialize array table (get arraytable from Timer model)
+		ArrayList<Timer> timeTable = (ArrayList<Timer>) Timer.getTimeTable();
+		// set array to pass over to the jsp
+		request.setAttribute("timeTable", timeTable);
 
+		
 		// check if clock has been started
 		if(linkState != null) {
 			// if started
@@ -58,7 +63,7 @@ public class Stopwatch extends HttpServlet {
 				if(session.getAttribute("start") != null) {
 					// get and set new stop date
 					Date stop = new Date();
-					session.setAttribute("stop", stop);
+					session.setAttribute("stop",stop);
 					// Create new Timer model (Date) cast to the session object for Start/Stop times
 					Timer newTR = new Timer((Date)session.getAttribute("start"), (Date)session.getAttribute("stop"));
 			
@@ -67,26 +72,12 @@ public class Stopwatch extends HttpServlet {
 					session.setAttribute("stop", null);
 					
 					// for testing only
+					request.setAttribute("newTR",  newTR);
 					System.out.println(newTR);
 					System.out.println(newTR.getStart());
 					System.out.println(newTR.getStop());
 					System.out.println(newTR.getDelta());
 					System.out.println(Timer.getTimeTable());
-					System.out.println(Timer.arrayToString());
-					
-					request.setAttribute("newTR",  newTR);
-								
-					// add to OR retrieve an array to make available to render in jsp
-					//session.setAttribute("timeTable", new ArrayList<Timer>());
-					//ArrayList<Timer> timeTable = (ArrayList<Timer>) session.getAttribute("timeTable");
-					//session.setAttribute("timeTable", timeTable);
-					//request.setAttribute("timeTable", timeTable);
-					
-					//ArrayList<Timer> timeTable = new ArrayList<Timer>();
-					//timeTable.add(newTR);
-					//request.getSession().setAttribute("timeTable",  timeTable);;
-					
-					//System.out.println(timeTable);
 					
 				}
 			}
@@ -95,8 +86,31 @@ public class Stopwatch extends HttpServlet {
 		if(session.getAttribute("start")!= null) {
 			// use currentTime to get delta if there isn't a stop time yet
 			if(session.getAttribute("stop") == null) {
+				
+				// get the difference value between start and stop date (in milliseconds)
 				long delta = currentTime.getTime() - ((Date) session.getAttribute("start")).getTime();
-				session.setAttribute("delta", delta);
+				
+				// break down time from milliseconds into seconds and minutes
+				long secondsInMilli = 1000;
+				long minutesInMilli = secondsInMilli * 60;
+				long hoursInMilli = minutesInMilli * 60;
+				
+				// get elapsed time in minutes
+				long elapsedMinutes = delta / minutesInMilli;
+				// reset the minute counter interval
+				delta = delta % minutesInMilli;
+				
+				// get elapsed time in seconds
+				long elapsedSeconds = delta / secondsInMilli;
+				// reset the second counter interval
+				delta = delta % secondsInMilli;
+				
+				// declare new elapsed time string
+				String deltaTime = elapsedMinutes + "m " + elapsedSeconds + "s";
+				
+				// set the newly declared elapsed delta time string to be rendered in jsp
+				session.setAttribute("deltaTime", deltaTime);
+				
 			} else {
 				// use stop time to get delta if it exist
 				long delta = ((Date) session.getAttribute("stop")).getTime() - ((Date) session.getAttribute("start")).getTime();
@@ -105,21 +119,20 @@ public class Stopwatch extends HttpServlet {
 			
 		}
 		
-			
 		// reset logic
 		if(linkState != null) {
 			if(linkState.equalsIgnoreCase("reset")) {
+				// clear array table
+				timeTable.clear();
+				// remove the httpsession tracking
 				request.getSession().invalidate();
 			}
 		}
-		
 		
 		// set view
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/stopwatch.jsp");
         view.forward(request, response);
         
-
-		
 	}
 
 	/**
@@ -127,10 +140,8 @@ public class Stopwatch extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-
 		// not passing any form data so don't need post method
-		
-		
+
 		doGet(request, response);
 	}
 

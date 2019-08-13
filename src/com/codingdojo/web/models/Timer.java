@@ -1,5 +1,6 @@
 package com.codingdojo.web.models;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,7 +11,7 @@ public class Timer implements java.io.Serializable {
 	// Timer member object variables
 	private Date start;
 	private Date stop;
-	private long delta;
+	private String delta;
 	
 	// List variable
 	private static ArrayList<Timer> timeTable = new ArrayList<Timer>();
@@ -25,6 +26,8 @@ public class Timer implements java.io.Serializable {
 		this.delta = getDelta(this.stop, this.start);
 		this.timeTable.add(this);
 	}
+	
+
 	
 	// getters and setters
 	public void setStart(Date start) {
@@ -43,22 +46,34 @@ public class Timer implements java.io.Serializable {
 		return stop;
 	}
 	
-	public long getDelta() {
+	public String getDelta() {
 		return delta;
 	}
 	
 	// used to calculate the duration of the timer (start / stop)
-	public static long getDelta(Date stop, Date start) {
-		return stop.getTime() - start.getTime();
+	public static String getDelta(Date stop, Date start) {
+		
+		// get the difference value between start and stop date (in milliseconds)
+		long delta = stop.getTime() - start.getTime();
+		// break down time from milliseconds into seconds and minutes
+		long secondsInMilli = 1000;
+		long minutesInMilli = secondsInMilli * 60;
+		long hoursInMilli = minutesInMilli * 60;
+		
+		// get elapsed time in minutes
+		long elapsedMinutes = delta / minutesInMilli;
+		delta = delta % minutesInMilli;
+		
+		// get elapsed time in seconds
+		long elapsedSeconds = delta / secondsInMilli;
+		delta = delta % secondsInMilli;
+		
+		return elapsedMinutes + "m " + elapsedSeconds + "s";
 	}
 	
 	public static ArrayList<Timer> getTimeTable(){
 		return timeTable;
 	}
 	
-	public static String arrayToString()
-    {
-        return timeTable.toString();
-    }
 	
 }
